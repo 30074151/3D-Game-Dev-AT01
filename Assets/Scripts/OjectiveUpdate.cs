@@ -15,7 +15,7 @@ public class OjectiveUpdate : MonoBehaviour
 
     private void UpdateObjectiveText(int doorID)
     {
-        objectiveText.text = "Find the door";
+        objectiveText.text = "Find Office Door";
     }
 
     private void OnDestroy()

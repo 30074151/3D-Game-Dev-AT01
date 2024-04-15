@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class IKey : MonoBehaviour, IInteraction
 {
-    public enum KeyCode { RedKey, BlueKey, KeySix }
-    public KeyCode keyCode = KeyCode.RedKey;
+    public enum KeyCode { OfficeKey, BlueKey, KeySix }
+    public KeyCode keyCode = KeyCode.OfficeKey;
 
     public void Activate()
     {

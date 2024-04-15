@@ -18,6 +18,7 @@ public class PlayerLook : MonoBehaviour
 
     public bool gamePaused;
 
+
     public bool CursorToggle 
     { 
         set 

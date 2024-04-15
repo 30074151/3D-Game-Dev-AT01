@@ -9,6 +9,7 @@ public class PlayerInteraction : MonoBehaviour
 
     private bool gamePaused;
 
+
     private void OnEnable()
     {
         EventManager.pauseGameEvent += TogglePaused;
@@ -34,15 +35,17 @@ public class PlayerInteraction : MonoBehaviour
                 RaycastHit hit;
 
                 //check for interactable in from of camera (within interaction distance
-                if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, iDistance))
+                if (!Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, iDistance))
                 {
-                    //if yes - call activate
-                    IInteraction interaction;
-                    if (hit.collider.gameObject.TryGetComponent<IInteraction>(out interaction))
-                    {
-                        interaction.Activate();
-                    }
+                    //Debug.Log(hit.collider.gameObject.name);
+                    return;
                 }   //if no - do nothing
+                    //if yes - call activate
+                IInteraction interaction;
+                if (hit.collider.gameObject.TryGetComponent<IInteraction>(out interaction))
+                {
+                    interaction.Activate();
+                }
             }
         }
     }

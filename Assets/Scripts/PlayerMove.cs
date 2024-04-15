@@ -6,8 +6,14 @@ public class PlayerMove : MonoBehaviour
 {
     private CharacterController cTroller;
 
-    [SerializeField] private float speed = 3.0f;
+    [SerializeField] private float speed = 2.0f;
+
+    [SerializeField] private float sprintSpeed = 4.0f;
+    [SerializeField] private bool sprinting;
     [SerializeField] private float jumpHeight = 1.0f;
+
+    [SerializeField] private float stamina;
+    [SerializeField] private float staminaMax;
 
 
     private float gravityValue = -9.81f;
@@ -25,6 +31,8 @@ public class PlayerMove : MonoBehaviour
     bool gamePaused;
 
     public static PlayerMove Instance;
+
+    [SerializeField] private MenuManager menuManager;
 
     private void OnEnable()
     {
@@ -58,6 +66,9 @@ public class PlayerMove : MonoBehaviour
         {
             PlayerInput();
         }
+
+        menuManager.setStamina(stamina / staminaMax);
+        //Debug.Log(staminaMax / stamina);
         
     }
 
@@ -69,6 +80,15 @@ public class PlayerMove : MonoBehaviour
 
     private void PlayerInput()
     {
+        if (Input.GetButtonDown("Sprint"))
+        {
+            sprinting = true;
+        }
+        else if (Input.GetButtonUp("Sprint"))
+        {
+            sprinting = false;
+        }
+
         isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
 
         if (isGrounded && velocity.y < 0)
@@ -81,7 +101,24 @@ public class PlayerMove : MonoBehaviour
 
         Vector3 move = transform.right * x + transform.forward * z;
 
-        cTroller.Move(move * speed * Time.deltaTime);
+        if (!sprinting)
+        {
+            cTroller.Move(move * speed * Time.deltaTime);
+            stamina += Time.deltaTime;
+            stamina = Mathf.Clamp(stamina, 0, staminaMax);
+        }
+        else
+        {
+            if (stamina > 0)
+            {
+                cTroller.Move(move * sprintSpeed * Time.deltaTime); 
+                stamina -= Time.deltaTime;
+            }
+            else
+            {
+                cTroller.Move(move * speed * Time.deltaTime);
+            }
+        }
 
         if (Input.GetButtonDown("Jump") && isGrounded)
         {
