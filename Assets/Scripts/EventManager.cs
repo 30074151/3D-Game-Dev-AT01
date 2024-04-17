@@ -25,4 +25,6 @@ public class EventManager : MonoBehaviour
 
     public delegate void PauseGame(bool toggle);
     public static PauseGame pauseGameEvent;
+    //update objective event (take in a string)***
+    //event updateobjectivemarker***
 }

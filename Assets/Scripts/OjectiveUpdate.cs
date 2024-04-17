@@ -11,11 +11,13 @@ public class OjectiveUpdate : MonoBehaviour
     void Start()
     {
         EventManager.unlockDoorEvent += UpdateObjectiveText;
+        //update objective text method subscribe to updateobjective event
     }
 
+    //this method should take in string and update objective text to display string
     private void UpdateObjectiveText(int doorID)
     {
-        objectiveText.text = "Find Office Door";
+        objectiveText.text = "Get to the Office";
     }
 
     private void OnDestroy()

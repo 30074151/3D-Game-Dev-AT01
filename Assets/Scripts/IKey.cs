@@ -11,6 +11,7 @@ public class IKey : MonoBehaviour, IInteraction
     {
         //call the 'picked up key' event and pass it our keycode value
         EventManager.unlockDoorEvent((int)keyCode);
+        //use updateobjective event to send new objective
         Debug.Log("Picked up key");
 
         gameObject.SetActive(false);

@@ -9,11 +9,17 @@ public class MissionWaypoint : MonoBehaviour
     public Image img;
     // The target (location, enemy, etc..)
     public Transform target;
+    //list of all objectives***
+    //current objective index***
+
     // UI Text to display the distance
     public Text meter;
     // To adjust the position of the icon
     public Vector3 offset;
 
+    //method subscribe to updateobjective position***
+    //increase current index +1***
+    //set target = objective.currentindex***
     private void Update()
     {
         // Giving limits to the icon so it sticks on the screen
