@@ -53,6 +53,10 @@ public class IDoor : MonoBehaviour, IInteraction
                 Debug.Log("Door closes");
             }
         }
+
+        EventManager.waypointUpdateEvent(1);
+
+    
     }
 
     private void OnTriggerEnter(Collider other)

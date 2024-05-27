@@ -14,6 +14,8 @@ public class IKey : MonoBehaviour, IInteraction
         //use updateobjective event to send new objective
         Debug.Log("Picked up key");
 
+        EventManager.waypointUpdateEvent(1);
+
         gameObject.SetActive(false);
     }
 

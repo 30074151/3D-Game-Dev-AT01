@@ -23,6 +23,9 @@ public class EventManager : MonoBehaviour
     public delegate void UnlockDoor(int id);
     public static UnlockDoor unlockDoorEvent;
 
+    public delegate void WaypointUpdate(int id);
+    public static WaypointUpdate waypointUpdateEvent;
+
     public delegate void PauseGame(bool toggle);
     public static PauseGame pauseGameEvent;
     //update objective event (take in a string)***

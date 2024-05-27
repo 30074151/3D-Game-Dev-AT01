@@ -8,8 +8,9 @@ public class MissionWaypoint : MonoBehaviour
     // Indicator icon
     public Image img;
     // The target (location, enemy, etc..)
-    public Transform target;
+    public Transform[] target;
     //list of all objectives***
+    private int index = 0;
     //current objective index***
 
     // UI Text to display the distance
@@ -20,6 +21,11 @@ public class MissionWaypoint : MonoBehaviour
     //method subscribe to updateobjective position***
     //increase current index +1***
     //set target = objective.currentindex***
+
+    private void Start()
+    {
+        EventManager.waypointUpdateEvent += UpdateWaypointTarget;
+    }
     private void Update()
     {
         // Giving limits to the icon so it sticks on the screen
@@ -35,10 +41,10 @@ public class MissionWaypoint : MonoBehaviour
         float maxY = Screen.height - minY;
 
         // Temporary variable to store the converted position from 3D world point to 2D screen point
-        Vector2 pos = Camera.main.WorldToScreenPoint(target.position + offset);
+        Vector2 pos = Camera.main.WorldToScreenPoint(target[index].position + offset);
 
         // Check if the target is behind us, to only show the icon once the target is in front
-        if (Vector3.Dot((target.position - transform.position), transform.forward) < 0)
+        if (Vector3.Dot((target[index].position - transform.position), transform.forward) < 0)
         {
             // Check if the target is on the left side of the screen
             if (pos.x < Screen.width / 2)
@@ -60,6 +66,16 @@ public class MissionWaypoint : MonoBehaviour
         // Update the marker's position
         img.transform.position = pos;
         // Change the meter text to the distance with the meter unit 'm'
-        meter.text = ((int)Vector3.Distance(target.position, transform.position)).ToString() + "m";
+        meter.text = ((int)Vector3.Distance(target[index].position, transform.position)).ToString() + "m";
+    }
+
+    void UpdateWaypointTarget(int waypointIndex)
+    {
+        index += waypointIndex;
+    }
+
+    private void OnDestroy()
+    {
+        EventManager.waypointUpdateEvent -= UpdateWaypointTarget;
     }
 }
