@@ -7,7 +7,7 @@ public class IDoor : MonoBehaviour, IInteraction
 
     public bool locked = true;
 
-    public enum DoorID {  OfficeDoor, BlueDoor, DoorSix }
+    public enum DoorID { OfficeDoor, Exit }
     public DoorID doorID = DoorID.OfficeDoor;
 
     [SerializeField] Animator animator;
