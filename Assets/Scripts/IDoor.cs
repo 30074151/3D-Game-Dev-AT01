@@ -13,7 +13,7 @@ public class IDoor : MonoBehaviour, IInteraction
     [SerializeField] Animator animator;
 
     bool doorOpen = false;
-
+    bool isActive = false;
     private void Start()
     {
         EventManager.unlockDoorEvent += UnlockDoor;
@@ -52,11 +52,12 @@ public class IDoor : MonoBehaviour, IInteraction
                 doorOpen = false;
                 Debug.Log("Door closes");
             }
-        }
-
-        EventManager.waypointUpdateEvent(1);
-
-    
+            if (!isActive)
+            {
+                EventManager.waypointUpdateEvent(1);
+                isActive = true;
+            }
+        }  
     }
 
     private void OnTriggerEnter(Collider other)

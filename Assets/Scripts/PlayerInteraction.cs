@@ -46,6 +46,7 @@ public class PlayerInteraction : MonoBehaviour
                 {
                     interaction.Activate();
                 }
+                
             }
         }
     }
