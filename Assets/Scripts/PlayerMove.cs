@@ -15,7 +15,6 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] private float stamina;
     [SerializeField] private float staminaMax;
 
-
     private float gravityValue = -9.81f;
     //private Vector3 playerVelocity;
     //[SerializeField] private bool groundedPlayer;
@@ -129,7 +128,7 @@ public class PlayerMove : MonoBehaviour
 
         cTroller.Move(velocity * Time.deltaTime);
     }
-
+   
     private void OnDestroy()
     {
         EventManager.pauseGameEvent -= TogglePaused;

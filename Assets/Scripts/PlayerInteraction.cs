@@ -20,11 +20,6 @@ public class PlayerInteraction : MonoBehaviour
         EventManager.pauseGameEvent -= TogglePaused;
     }
 
-    private void Start()
-    {
-        
-    }
-
     private void Update()
     {
         if (!gamePaused)

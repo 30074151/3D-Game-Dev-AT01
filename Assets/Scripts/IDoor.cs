@@ -6,7 +6,6 @@ public class IDoor : MonoBehaviour, IInteraction
 {
 
     public bool locked = true;
-
     public enum DoorID { OfficeDoor, Exit }
     public DoorID doorID = DoorID.OfficeDoor;
 
@@ -45,12 +44,14 @@ public class IDoor : MonoBehaviour, IInteraction
                 animator.Play("DoorOpen");
                 doorOpen = true;
                 Debug.Log("Door opens");
+
             }
             else
             {
                 animator.Play("DoorClose");
                 doorOpen = false;
                 Debug.Log("Door closes");
+            
             }
             if (!isActive)
             {
