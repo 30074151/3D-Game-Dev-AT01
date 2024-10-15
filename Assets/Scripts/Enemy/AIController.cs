@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.AI;
 using UnityEngine;
+using UnityEngine.UIElements;
+using System.Security.Cryptography;
 
 namespace Enemy
 {
@@ -34,6 +36,7 @@ namespace Enemy
         // move randomly???
         [SerializeField] private Vector3 _randomPosition;
         //where are you player??
+        [SerializeField] private float og_detectionRadius = 5f;
         [SerializeField] private float _detectionRadius = 5f;
         //who are you player??
         [SerializeField] private LayerMask _playerLayer;
@@ -48,9 +51,11 @@ namespace Enemy
 
         [SerializeField] private float _stunDuration = 3f;
         PlayerMove playerMove;
+        CharacterController cTroller;
         [SerializeField] float timer = 0;
         bool idleChoice = false;
         bool isStunned = false;
+        [SerializeField] bool isPlayerRunning;
         #endregion
         #region Unity Event Functions
         private void Start()
@@ -58,11 +63,30 @@ namespace Enemy
             _agent = GetComponent<NavMeshAgent>();
             _animator = GetComponent<Animator>();
             playerMove = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerMove>();
+            cTroller = GameObject.FindGameObjectWithTag("Player").GetComponent<CharacterController>();
             _state = AIState.Idle;
             TransitionToState(_state);
+
+            og_detectionRadius = _detectionRadius;
         }
         private void Update()
         {
+
+            // Check if player is running
+            isPlayerRunning = cTroller.GetComponent<PlayerMove>().sprinting;
+            if (isPlayerRunning)
+            {
+                if (_detectionRadius == og_detectionRadius)
+                {
+                    _detectionRadius = _detectionRadius * 2;
+                }
+            }
+            else
+            {
+                _detectionRadius = og_detectionRadius;
+            }
+
+
             switch (_state)
             {
                 case AIState.Idle:
@@ -367,19 +391,21 @@ namespace Enemy
             // Wait for the attack animation duration or a fixed time
             yield return new WaitForSeconds(1f);
 
-            // After the attack, re-enable movement
-            _agent.isStopped = false;
+            cTroller.GetComponent<PlayerHealth>().KillPlayer();
 
-            // If the player is still in range, transition to Chase, otherwise go idle or patrol
-            float distanceToPlayer = Vector3.Distance(transform.position, GetPlayerPosition());
-            if (distanceToPlayer > _attackDistance)
-            {
-                TransitionToState(AIState.Chase);
-            }
-            else
-            {
-                TransitionToState(AIState.Patrol);
-            }
+            //// After the attack, re-enable movement
+            //_agent.isStopped = false;
+
+            //// If the player is still in range, transition to Chase, otherwise go idle or patrol
+            //float distanceToPlayer = Vector3.Distance(transform.position, GetPlayerPosition());
+            //if (distanceToPlayer > _attackDistance)
+            //{
+            //    TransitionToState(AIState.Chase);
+            //}
+            //else
+            //{
+            //    TransitionToState(AIState.Patrol);
+            //}
         }
 
         public void DealDamageToPlayer()

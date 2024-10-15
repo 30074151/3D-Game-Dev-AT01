@@ -5363,6 +5363,7 @@ GameObject:
   - component: {fileID: 680627338}
   - component: {fileID: 680627336}
   - component: {fileID: 680627339}
+  - component: {fileID: 680627340}
   m_Layer: 7
   m_Name: Player
   m_TagString: Player
@@ -5523,6 +5524,22 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   menuManager: {fileID: 1655814642}
+--- !u!114 &680627340
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 680627331}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0bef5abcc1887e14a8c86c0113e3233b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GameoverScreen: {fileID: 1927746077}
+  waypoint: {fileID: 159695157}
+  playerDead: 0
+  cTroller: {fileID: 0}
 --- !u!1 &689763413 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3019568617730713240, guid: 5dd5a1ab6047d4848b7668734815016f, type: 3}
@@ -8587,7 +8604,8 @@ MonoBehaviour:
   - {fileID: 1447301635}
   _currentWayPointIndex: 0
   _randomPosition: {x: 0, y: 0, z: 0}
-  _detectionRadius: 5
+  og_detectionRadius: 6
+  _detectionRadius: 6
   _playerLayer:
     serializedVersion: 2
     m_Bits: 128
@@ -8597,6 +8615,7 @@ MonoBehaviour:
   _lastAttackTime: 0
   _stunDuration: 3
   timer: 0
+  isPlayerRunning: 0
 --- !u!195 &1097444069
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -12884,8 +12903,8 @@ RectTransform:
   - {fileID: 582233634}
   - {fileID: 913550307}
   - {fileID: 1034858985}
-  - {fileID: 1927746078}
   - {fileID: 159695158}
+  - {fileID: 1927746078}
   - {fileID: 1390009250}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -15407,10 +15426,10 @@ RectTransform:
   - {fileID: 1152449797}
   m_Father: {fileID: 1655814646}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 1920, y: 1080}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1927746079
 MonoBehaviour:
@@ -15425,7 +15444,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0.392}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1

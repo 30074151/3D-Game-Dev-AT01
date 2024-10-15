@@ -9,7 +9,7 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] private float speed = 2.0f;
 
     [SerializeField] private float sprintSpeed = 4.0f;
-    [SerializeField] private bool sprinting;
+    [SerializeField] public bool sprinting;
     [SerializeField] private float jumpHeight = 1.0f;
 
     [SerializeField] private float stamina;
