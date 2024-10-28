@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class IKey : MonoBehaviour, IInteraction
 {
-    public enum KeyCode { OfficeKey, BlueKey, KeySix }
+    public enum KeyCode { OfficeKey }
     public KeyCode keyCode = KeyCode.OfficeKey;
 
     public void Activate()
