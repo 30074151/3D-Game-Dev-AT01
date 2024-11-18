@@ -92,8 +92,7 @@ public class PlayerLook : MonoBehaviour
     {
         if(lookEnable == true)
         {
-            mouseDir = new Vector2(Input.GetAxisRaw("Mouse X") * sensitivity, 
-                Input.GetAxisRaw("Mouse Y") * sensitivity);
+            mouseDir = new Vector2(Input.GetAxisRaw("Mouse X") * sensitivity, Input.GetAxisRaw("Mouse Y") * sensitivity);
 
             smoothing = Vector2.Lerp(smoothing, mouseDir, 1 / drag);
 

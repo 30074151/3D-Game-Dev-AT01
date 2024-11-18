@@ -52,6 +52,8 @@ namespace Enemy
         [SerializeField] private float _stunDuration = 3f;
         PlayerMove playerMove;
         CharacterController cTroller;
+        GameObject playerREF;
+        bool pauseCheck;
         [SerializeField] float timer = 0;
         bool idleChoice = false;
         bool isStunned = false;
@@ -60,6 +62,8 @@ namespace Enemy
         #region Unity Event Functions
         private void Start()
         {
+            playerREF = GameObject.FindWithTag("Player"); // Finds the GameObject with the Tag "Player"
+            pauseCheck = playerREF.GetComponent<PlayerInteraction>().gamePaused; // Gets the paused bool value form the PlayerInteraction script
             _agent = GetComponent<NavMeshAgent>();
             _animator = GetComponent<Animator>();
             playerMove = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerMove>();
@@ -71,101 +75,113 @@ namespace Enemy
         }
         private void Update()
         {
-
-            // Check if player is running
-            isPlayerRunning = cTroller.GetComponent<PlayerMove>().sprinting;
-            if (isPlayerRunning)
+            if (!pauseCheck) 
             {
-                if (_detectionRadius == og_detectionRadius)
+                _agent.speed = 1;
+                // Check if player is running
+                isPlayerRunning = cTroller.GetComponent<PlayerMove>().sprinting;
+                if (isPlayerRunning)
                 {
-                    _detectionRadius = _detectionRadius * 2;
+                    if (_detectionRadius == og_detectionRadius)
+                    {
+                        _detectionRadius = _detectionRadius * 2;
+                    }
+                }
+                else
+                {
+                    _detectionRadius = og_detectionRadius;
+                }
+
+
+                switch (_state)
+                {
+                    case AIState.Idle:
+                        StartCoroutine(Idle());
+                        break;
+                    case AIState.Patrol:
+                        Patrol();
+                        break;
+                    case AIState.Wander:
+                        Wander();
+                        break;
+                    case AIState.Stun:
+                        Stun();
+                        break;
+                    case AIState.Attack:
+                        Attack();
+                        break;
+                    case AIState.Chase:
+                        Chase();
+                        break;
+
                 }
             }
             else
             {
-                _detectionRadius = og_detectionRadius;
+                _agent.speed = 0;
             }
-
-
-            switch (_state)
-            {
-                case AIState.Idle:
-                    StartCoroutine(Idle());
-                    break;
-                case AIState.Patrol:
-                    Patrol();
-                    break;
-                case AIState.Wander:
-                    Wander();
-                    break;
-                case AIState.Stun:
-                    Stun();
-                    break;
-                case AIState.Attack:
-                    Attack();
-                    break;
-                case AIState.Chase:
-                    Chase();
-                    break;
-
-            }
-
         }
         private void LateUpdate()
         {
-            float distanceToPlayer = Vector3.Distance(transform.position, GetPlayerPosition());
-            if (distanceToPlayer <= _attackDistance)
+            if (!pauseCheck)
             {
-                TransitionToState(AIState.Attack);
+                float distanceToPlayer = Vector3.Distance(transform.position, GetPlayerPosition());
+                if (distanceToPlayer <= _attackDistance)
+                {
+                    TransitionToState(AIState.Attack);
+                }
+                if (distanceToPlayer <= _detectionRadius && distanceToPlayer > _attackDistance)
+                {
+                    TransitionToState(AIState.Chase);
+                }
+                if (distanceToPlayer > _chaseDistance && _state == AIState.Chase)
+                {
+                    TransitionToState(AIState.Idle);
+                }
+                switch (_state)
+                {
+                    case AIState.Idle:
+                        _agent.isStopped = true;
+                        _agent.stoppingDistance = 2.5f;
+                        _agent.speed = 0;
+                        StartCoroutine(Idle());
+                        break;
+                    case AIState.Patrol:
+                        _agent.isStopped = false;
+                        _agent.stoppingDistance = 0f;
+                        _agent.speed = _walkSpeed;
+                        Patrol();
+                        break;
+                    case AIState.Wander:
+                        _agent.isStopped = false;
+                        _agent.stoppingDistance = 0f;
+                        _agent.speed = _walkSpeed;
+                        Wander();
+                        break;
+                    case AIState.Stun:
+                        _agent.destination = this.transform.position;
+                        _agent.isStopped = true;
+                        _agent.stoppingDistance = 2.5f;
+                        _agent.speed = 0;
+                        Stun();
+                        break;
+                    case AIState.Attack:
+                        _agent.isStopped = true;
+                        _agent.stoppingDistance = 2.5f;
+                        _agent.speed = 0;
+                        Attack();
+                        break;
+                    case AIState.Chase:
+                        _agent.isStopped = false;
+                        _agent.stoppingDistance = 0f;
+                        _agent.speed = _runSpeed;
+                        Chase();
+                        break;
+                }
             }
-            if (distanceToPlayer <= _detectionRadius && distanceToPlayer > _attackDistance)
+            else
             {
-                TransitionToState(AIState.Chase);
-            }
-            if (distanceToPlayer > _chaseDistance && _state == AIState.Chase)
-            {
-                TransitionToState(AIState.Idle);
-            }
-            switch (_state)
-            {
-                case AIState.Idle:
-                    _agent.isStopped = true;
-                    _agent.stoppingDistance = 2.5f;
-                    _agent.speed = 0;
-                    StartCoroutine(Idle());
-                    break;
-                case AIState.Patrol:
-                    _agent.isStopped = false;
-                    _agent.stoppingDistance = 0f;
-                    _agent.speed = _walkSpeed;
-                    Patrol();
-                    break;
-                case AIState.Wander:
-                    _agent.isStopped = false;
-                    _agent.stoppingDistance = 0f;
-                    _agent.speed = _walkSpeed;
-                    Wander();
-                    break;
-                case AIState.Stun:
-                    _agent.destination = this.transform.position;
-                    _agent.isStopped = true;
-                    _agent.stoppingDistance = 2.5f;
-                    _agent.speed = 0;
-                    Stun();
-                    break;
-                case AIState.Attack:
-                    _agent.isStopped = true;
-                    _agent.stoppingDistance = 2.5f;
-                    _agent.speed = 0;
-                    Attack();
-                    break;
-                case AIState.Chase:
-                    _agent.isStopped = false;
-                    _agent.stoppingDistance = 0f;
-                    _agent.speed = _runSpeed;
-                    Chase();
-                    break;
-
+                _agent.speed = 0;
             }
         }
         #endregion
@@ -173,7 +189,10 @@ namespace Enemy
         #region States
         void TransitionToState(AIState newState)
         {
-            _state = newState;
+            if (!pauseCheck)
+            {
+                _state = newState;
+            }
             //switch (_state)
             //{
             //    case AIState.Idle:
@@ -201,101 +220,114 @@ namespace Enemy
         }
         IEnumerator Idle()
         {
-            if (isStunned)
+            if (!pauseCheck)
             {
-                yield return null;
-            }
-            PlayAnim("Idle");
-            _agent.stoppingDistance = 2.5f;
-            _agent.speed = 0;
-            timer = Random.Range(3, 10f);
-            yield return new WaitForSeconds(timer);
-            if (_state == AIState.Idle)
-            {
-                int choice = Random.Range(0, 2);
-                if (choice == 0)
+                if (isStunned)
                 {
-                    _randomPosition = GetRandomPosition();
-                    TransitionToState(AIState.Wander);
-
+                    yield return null;
                 }
-            }
-            else
-            {
-                TransitionToState(AIState.Patrol);
+                PlayAnim("Idle");
+                _agent.stoppingDistance = 2.5f;
+                _agent.speed = 0;
+                timer = Random.Range(3, 10f);
+                yield return new WaitForSeconds(timer);
+                if (_state == AIState.Idle)
+                {
+                    int choice = Random.Range(0, 2);
+                    if (choice == 0)
+                    {
+                        _randomPosition = GetRandomPosition();
+                        TransitionToState(AIState.Wander);
+
+                    }
+                }
+                else
+                {
+                    TransitionToState(AIState.Patrol);
+                }
             }
         }
 
 
         void Patrol()
         {
-            if (isStunned)
+            if (!pauseCheck)
             {
-                return;
-            }
-            _agent.speed = _walkSpeed;
-            _agent.stoppingDistance = 0f;
+                if (isStunned)
+                {
+                    return;
+                }
+                _agent.speed = _walkSpeed;
+                _agent.stoppingDistance = 0f;
 
-            PlayAnim("Walk");
-            if (_wayPoints.Length == 0)
-            {
-                TransitionToState(AIState.Idle);
-            }
-            if (!_agent.pathPending && _agent.remainingDistance <= _agent.stoppingDistance)
-            {
-                int choice = Random.Range(0, 6);
-                if (choice == 0)
+                PlayAnim("Walk");
+                if (_wayPoints.Length == 0)
                 {
                     TransitionToState(AIState.Idle);
                 }
-                else
+                if (!_agent.pathPending && _agent.remainingDistance <= _agent.stoppingDistance)
                 {
-                    TransitionToNextWayPoint();
+                    int choice = Random.Range(0, 6);
+                    if (choice == 0)
+                    {
+                        TransitionToState(AIState.Idle);
+                    }
+                    else
+                    {
+                        TransitionToNextWayPoint();
+                    }
                 }
             }
         }
 
         void TransitionToNextWayPoint()
         {
-            _currentWayPointIndex = (_currentWayPointIndex + 1) % _wayPoints.Length;
-            _agent.SetDestination(_wayPoints[_currentWayPointIndex].position);
-            _agent.speed = _walkSpeed;
-            PlayAnim("Walk");
+            if (!pauseCheck)
+            {
+                _currentWayPointIndex = (_currentWayPointIndex + 1) % _wayPoints.Length;
+                _agent.SetDestination(_wayPoints[_currentWayPointIndex].position);
+                _agent.speed = _walkSpeed;
+                PlayAnim("Walk");
+            }
         }
         void Wander()
         {
-            if (isStunned)
+            if (!pauseCheck)
             {
-                return;
-            }
-            _agent.SetDestination(_randomPosition);
-            _agent.stoppingDistance = 0f;
 
-            while (_agent.pathStatus == NavMeshPathStatus.PathInvalid)
-            {
-                GetRandomPosition();
-                _agent.SetDestination(_randomPosition);
-            }
-            _agent.speed = _walkSpeed;
-            PlayAnim("Walk");
-            Debug.Log("1");
-            if (_agent.remainingDistance <= 1f)
-            {
-                Debug.Log("2");
-                int choice = Random.Range(0, 10);
-                Debug.Log("3: " + choice);
-
-                if (choice == 0)
+                if (isStunned)
                 {
-                    Debug.Log("4: Idle");
-                    TransitionToState(AIState.Idle);
+                    return;
                 }
-                else
+                _agent.SetDestination(_randomPosition);
+                _agent.stoppingDistance = 0f;
+
+                while (_agent.pathStatus == NavMeshPathStatus.PathInvalid)
                 {
-                    Debug.Log("4: Wander");
-                    _randomPosition = GetRandomPosition();
-                    Debug.Log("5: Wander");
-                    TransitionToState(AIState.Wander);
+                    GetRandomPosition();
+                    _agent.SetDestination(_randomPosition);
+                }
+                _agent.speed = _walkSpeed;
+                PlayAnim("Walk");
+                Debug.Log("1");
+                if (_agent.remainingDistance <= 1f)
+                {
+                    Debug.Log("2");
+                    int choice = Random.Range(0, 10);
+                    Debug.Log("3: " + choice);
+
+                    if (choice == 0)
+                    {
+                        Debug.Log("4: Idle");
+                        TransitionToState(AIState.Idle);
+                    }
+                    else
+                    {
+                        Debug.Log("4: Wander");
+                        _randomPosition = GetRandomPosition();
+                        Debug.Log("5: Wander");
+                        TransitionToState(AIState.Wander);
+                    }
                 }
             }
         }
@@ -315,28 +347,31 @@ namespace Enemy
         }
         void Chase()
         {
-            if (isStunned)
+            if (!pauseCheck)
             {
-                Debug.Log("Return Coz Stunn");
-                return;
+                if (isStunned)
+                {
+                    Debug.Log("Return Coz Stunn");
+                    return;
                 
+                }
+                _agent.SetDestination(GetPlayerPosition());
+                Debug.Log("Destination");
+                PlayAnim("Run");
+                Debug.Log("Animation");
+                _agent.stoppingDistance = 0.2f;
+                Debug.Log("stopp dist");
+                _agent.speed = _runSpeed;
+                Debug.Log("runSpeed");
+
+
+                //// Slow down as the enemy approaches the player
+                float distanceToPlayer = Vector3.Distance(transform.position, GetPlayerPosition());
+                if (distanceToPlayer <= _attackDistance)
+                {
+                    TransitionToState(AIState.Attack);
+                }           
             }
-            _agent.SetDestination(GetPlayerPosition());
-            Debug.Log("Destination");
-            PlayAnim("Run");
-            Debug.Log("Animation");
-            _agent.stoppingDistance = 0.2f;
-            Debug.Log("stopp dist");
-            _agent.speed = _runSpeed;
-            Debug.Log("runSpeed");
-
-
-            //// Slow down as the enemy approaches the player
-            float distanceToPlayer = Vector3.Distance(transform.position, GetPlayerPosition());
-            if (distanceToPlayer <= _attackDistance)
-            {
-                TransitionToState(AIState.Attack);
-            }           
         }
 
         public void Activate()
@@ -370,19 +405,22 @@ namespace Enemy
 
         void Attack()
         {
-            if (isStunned)
+            if (!pauseCheck)
             {
-                return;
-            }
-            // Stop enemy while attacking to prevent sliding past Player
-            _agent.isStopped = true;
-            _agent.speed = 0;
-            _agent.stoppingDistance = 2f;
-            // Trigger attack animation
-            PlayAnim("Attack");
+                if (isStunned)
+                {
+                    return;
+                }
+                // Stop enemy while attacking to prevent sliding past Player
+                _agent.isStopped = true;
+                _agent.speed = 0;
+                _agent.stoppingDistance = 2f;
+                // Trigger attack animation
+                PlayAnim("Attack");
 
-            // Once the attack is over, re-enable
-            StartCoroutine(ResumeAfterAttack());
+                // Once the attack is over, re-enable
+                StartCoroutine(ResumeAfterAttack());
+            }
         }
 
         // Coroutine to resume movement after the attack animation

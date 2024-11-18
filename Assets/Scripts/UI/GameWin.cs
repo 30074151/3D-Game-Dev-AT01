@@ -10,6 +10,8 @@ public class GameWin : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         gameWin.SetActive(true);
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
     }
 
     public void restart()

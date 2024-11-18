@@ -7,7 +7,7 @@ public class PlayerInteraction : MonoBehaviour
     //the maximum interaction distance
     [SerializeField] private float iDistance;
 
-    private bool gamePaused;
+    public bool gamePaused;
 
 
     private void OnEnable()
